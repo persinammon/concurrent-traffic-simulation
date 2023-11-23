@@ -1,5 +1,5 @@
 #include <iostream>
-#include <random>
+#include <cstdlib>
 #include "TrafficLight.h"
 
 /* Implementation of class "MessageQueue" */
@@ -43,21 +43,29 @@ TrafficLightPhase TrafficLight::getCurrentPhase()
 
 void TrafficLight::simulate()
 {
-    // FP.2b : Finally, the private method „cycleThroughPhases“ should be started in a thread when the public method „simulate“ is called. To do this, use the thread queue in the base class. 
+    // use 1 thread to run the traffic light by giving it cycleThroughPhases
+    // no need to pass in data to run the simulation, so no need to use a lambda
+    threads.emplace_back(std::thread(&TrafficLight::cycleThroughPhases, this));  
+    // all threads owned by TrafficLight are destroyed by the thread barrier implemented
+    // in the parent class
 }
 
 // virtual function which is executed in a thread
 void TrafficLight::cycleThroughPhases()
-{
-    // FP.2a : Implement the function with an infinite loop that measures the time between two loop cycles 
-    // and toggles the current phase of the traffic light between red and green and sends an update method 
-    // to the message queue using move semantics. The cycle duration should be a random value between 4 and 6 seconds. 
-    // Also, the while-loop should use std::this_thread::sleep_for to wait 1ms between two cycles. 
-    // while (true) {
-    //     randDuration = value between 4 and 6 seconds;
-    //     std::this_thread::sleep_for(randDuration);
-    //     _currentPhase = (_currentPhase == red) ? greeen : red;
-    //     std::this_thread::sleep_for(1 ms);
-    // }
+{    
+    // cycle duration is a random integer between 4 and 6 seconds
+    srand(time(NULL));
+    std::chrono::duration cycleDuration = std::chrono::seconds((std::rand() % 3) + 4);
+    //std::cout << " cycle duration" << cycleDuration.count() << std::endl;
+    while (true) {
+        std::this_thread::sleep_for(cycleDuration);
+        _currentPhase = (_currentPhase == TrafficLightPhase::red) ? TrafficLightPhase::green : TrafficLightPhase::red;
+        // update method to the message queue using move semantics
+        // owning a message queue, send it a new instance of TrafficLightPhase enum
+
+        // without a small thread wait function, the processor burns fast and hard through an infinite while loop
+        // this sleep_for instruction reduces processor load
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
 }
 

@@ -7,12 +7,13 @@ I found this [resource](https://medium.com/codex/c-multithreading-the-simple-way
 
 Or, more or less, the data races are not 100% guaranteed to show up per run. You should be able to spot them on your own.
 
-I was very interested in the fact that, because threads do not have a copy constructor, a vector of threads needs to be populated by the move constructor and therefore by using `emplace_back`; also, when multiple threads are running, interleaved work can present a bug such as interrupted print statements in `cout`.
-
-This project is a traffic simulation in which vehicles are moving along streets and are crossing intersections. With increasing traffic in the city, traffic lights are needed for road safety. Each intersection has one traffic light. There needs to be a thread-safe communication protocol between vehicles and intersection (traffic lights) to complete the simulation, allowing for car objects to travel to their end address autonomously, while coordinating within themselves. 
+I was very interested in the fact that, because threads do not have a copy constructor, a vector of threads needs to be populated by the move constructor and therefore by using `emplace_back`; also, when multiple threads are running, interleaved work can present a bug such as interrupted print statements in `cout`- `cout` is a shared resource that can be accessed in the middle of executing another method (??).
 
 Notable code changes made in the project:
-- Everything was implemented, and the basic structure of vehicles heading to destinations, communicating with a traffic light, and passing through one at a time worked. The changes were 
+- The basic structure of the project was already implemented- vehicles heading to destinations, communicating with an open intersection, and passing through one at a time worked. What was implemented was the ability for a traffic light to have a red light, and therefore coordinate the passage of cars from different directions effectively. Instead of a first in-first out order to which car passes, red and green lights govern the flow of traffic. 
+- This wasn't in the project spec at all, but I wanted to pass in a parameter to the driver that would allow CLI toggling
+between the two cities Paris and NYC. The data and functions are already pre-written within the driver, all that has to be changed
+are which method is called in the `main` function.
 
 <img src="data/traffic_simulation.gif"/>
 
@@ -32,17 +33,17 @@ Notable code changes made in the project:
 
 ## Basic Build Instructions
 
+Two Options - 
+1. Only download the executable `traffic_simulation` from the `build` folder, and run it 
+through the `./traffic_simulation` command in the same directory.
+Or-
 1. Clone repo to local.
 2. Make a build directory in the top level directory: `mkdir build && cd build`
 3. Compile: `cmake .. && make`
 4. Run it through the following command: `./traffic_simulation`.
 
 ## Project Tasks
-
-When the project is built initially, all traffic lights will be green. When you are finished with the project, your traffic simulation should run with red lights controlling traffic, just as in the .gif file above. See the classroom instruction and code comments for more details on each of these parts. 
-
-- **Task FP.1** : Define a class `TrafficLight` which is a child class of `TrafficObject`. The class shall have the public methods `void waitForGreen()` and `void simulate()` as well as `TrafficLightPhase getCurrentPhase()`, where `TrafficLightPhase` is an enum that can be either `red` or `green`. Also, add the private method `void cycleThroughPhases()`. Furthermore, there shall be the private member `_currentPhase` which can take `red` or `green` as its value.
-- **Task FP.2** : Implement the function with an infinite loop that measures the time between two loop cycles and toggles the current phase of the traffic light between red and green and sends an update method to the message queue using move semantics. The cycle duration should be a random value between 4 and 6 seconds. Also, the while-loop should use `std::this_thread::sleep_`for to wait 1ms between two cycles. Finally, the private method `cycleThroughPhases` should be started in a thread when the public method `simulate` is called. To do this, use the thread queue in the base class.
+ 
 - **Task FP.3** : Define a class `MessageQueue` which has the public methods send and receive. Send should take an rvalue reference of type TrafficLightPhase whereas receive should return this type. Also, the class should define an `std::dequeue` called `_queue`, which stores objects of type `TrafficLightPhase`. Finally, there should be an `std::condition_variable` as well as an `std::mutex` as private members.
 - **Task FP.4** : Implement the method `Send`, which should use the mechanisms `std::lock_guard<std::mutex>` as well as `_condition.notify_one()` to add a new message to the queue and afterwards send a notification. Also, in class `TrafficLight`, create a private member of type `MessageQueue` for messages of type `TrafficLightPhase` and use it within the infinite loop to push each new `TrafficLightPhase` into it by calling send in conjunction with move semantics.
 - **Task FP.5** : The method receive should use `std::unique_lock<std::mutex>` and `_condition.wait()` to wait for and receive new messages and pull them from the queue using move semantics. The received object should then be returned by the receive function. Then, add the implementation of the method `waitForGreen`, in which an infinite while-loop runs and repeatedly calls the `receive` function on the message queue. Once it receives `TrafficLightPhase::green`, the method returns.

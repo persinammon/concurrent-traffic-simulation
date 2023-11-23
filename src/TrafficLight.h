@@ -25,6 +25,7 @@ private:
 };
 
 // fyi, enum class and enum struct are functionally equivalent aka the same thing
+// avoiding using global scope, for clean code convention rather than a practical reason
 enum class TrafficLightPhase {
     red,
     green
@@ -38,7 +39,7 @@ public:
     ~TrafficLight();
 
     // getters / setters
-    TrafficLightPhase getCurrentPhase();
+    TrafficLightPhase getCurrentPhase() { return _currentPhase; };
 
     // typical behaviour methods
     void waitForGreen();
