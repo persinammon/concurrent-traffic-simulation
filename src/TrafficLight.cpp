@@ -11,7 +11,8 @@ T MessageQueue<T>::receive()
     std::unique_lock<std::mutex> ulock(_mutex);
     _cond.wait(ulock, [this] { return !_queue.empty(); }); 
     // pass unique lock to condition variable
-    // the lambda will only return false and stop the wait if the queue is empty 
+    // the lambda will only return false and stop the wait if the queue is empty
+    // if true, will move to the following lines of code 
     
     // remove and return first element from queue
     T msg = std::move(_queue.front());
