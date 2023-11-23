@@ -209,4 +209,7 @@ CMakeFiles/traffic_simulation.dir/src/Intersection.cpp.o: \
  /usr/include/c++/11/backward/auto_ptr.h \
  /usr/include/c++/11/pstl/glue_memory_defs.h \
  /mnt/c/Users/Monica\ Kumaran/Documents/Projects/CppND-Program-a-Concurrent-Traffic-Simulation/src/Intersection.h \
+ /mnt/c/Users/Monica\ Kumaran/Documents/Projects/CppND-Program-a-Concurrent-Traffic-Simulation/src/TrafficLight.h \
+ /usr/include/c++/11/deque /usr/include/c++/11/bits/stl_deque.h \
+ /usr/include/c++/11/bits/deque.tcc \
  /mnt/c/Users/Monica\ Kumaran/Documents/Projects/CppND-Program-a-Concurrent-Traffic-Simulation/src/Vehicle.h

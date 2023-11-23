@@ -67,12 +67,12 @@ void TrafficLight::cycleThroughPhases()
 {    
     // cycle duration is a random integer between 4 and 6 seconds
     srand(time(NULL));
-    std::chrono::duration cycleDuration = std::chrono::seconds((std::rand() % 3) + 4);
     while (true) {
+        std::chrono::duration cycleDuration = std::chrono::seconds((std::rand() % 3) + 4);
         std::this_thread::sleep_for(cycleDuration);
         _currentPhase = (_currentPhase == TrafficLightPhase::red) ? TrafficLightPhase::green : TrafficLightPhase::red;
         // update method to the message queue using move semantics, r-value
-        _messagequeue.send(&&_currentPhase);
+        _messagequeue.send(std::move(_currentPhase));
         // without a small thread wait function, the processor burns fast and hard through an infinite while loop
         // this sleep_for instruction reduces processor load
         std::this_thread::sleep_for(std::chrono::milliseconds(1));

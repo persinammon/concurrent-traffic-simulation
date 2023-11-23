@@ -10,10 +10,11 @@ Or, more or less, the data races are not 100% guaranteed to show up per run. You
 I was very interested in the fact that, because threads do not have a copy constructor, a vector of threads needs to be populated by the move constructor and therefore by using `emplace_back`; also, when multiple threads are running, interleaved work can present a bug such as interrupted print statements in `cout`- `cout` is a shared resource that can be accessed in the middle of executing another method (??).
 
 Notable code changes made in the project:
-- The basic structure of the project was already implemented- vehicles heading to destinations, communicating with an open intersection, and passing through one at a time worked. What was implemented was the ability for a traffic light to have a red light, and therefore coordinate the passage of cars from different directions effectively. Instead of a first in-first out order to which car passes, red and green lights govern the flow of traffic. 
+- The basic structure of the project was already implemented- vehicles heading to destinations, communicating with an open intersection, and passing through one at a time worked. What was implemented was the ability for a traffic light to have a red light, and therefore pause the flow of cars. In addition to FIFO of cars being let through, the lights cycle between red and green. 
+- Flesh out a generic message queue with implementation split across `TrafficLight.h` and `TrafficLight.cpp`. Add some connecting code in `Intersection`, with a notable lines being `L87` to `L91`.
 - This wasn't in the project spec at all, but I wanted to pass in a parameter to the driver that would allow CLI toggling
 between the two cities Paris and NYC. The data and functions are already pre-written within the driver, all that has to be changed
-are which method is called in the `main` function.
+are which method is called in the `main` function. This is still unimplemented.
 
 <img src="data/traffic_simulation.gif"/>
 
@@ -41,7 +42,3 @@ Or-
 2. Make a build directory in the top level directory: `mkdir build && cd build`
 3. Compile: `cmake .. && make`
 4. Run it through the following command: `./traffic_simulation`.
-
-## Project Tasks
- 
-- **Task FP.6** : In class Intersection, add a private member `_trafficLight` of type `TrafficLight`. In method `Intersection::simulate()`, start the simulation of `_trafficLight`. Then, in method `Intersection::addVehicleToQueue`, use the methods `TrafficLight::getCurrentPhase` and `TrafficLight::waitForGreen` to block the execution until the traffic light turns green.
