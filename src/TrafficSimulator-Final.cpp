@@ -113,7 +113,7 @@ void createTrafficObjects_NYC(std::vector<std::shared_ptr<Street>> &streets, std
 }
 
 /* Main function */
-int main()
+int main(int argc, char** argv)
 {
     /* PART 1 : Set up traffic objects */
 
@@ -123,7 +123,18 @@ int main()
     std::vector<std::shared_ptr<Vehicle>> vehicles;
     std::string backgroundImg;
     int nVehicles = 6;
-    createTrafficObjects_Paris(streets, intersections, vehicles, backgroundImg, nVehicles);
+
+    if (argc == 2) {
+        std::string city(argv[1]);
+        if (city == "nyc") {
+            createTrafficObjects_NYC(streets, intersections, vehicles, backgroundImg, nVehicles);
+        } else {
+            createTrafficObjects_Paris(streets, intersections, vehicles, backgroundImg, nVehicles);
+        }
+    }
+    else {
+        createTrafficObjects_Paris(streets, intersections, vehicles, backgroundImg, nVehicles);
+    }
 
     /* PART 2 : simulate traffic objects */
 

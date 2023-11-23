@@ -7,14 +7,15 @@ I found this [resource](https://medium.com/codex/c-multithreading-the-simple-way
 
 Or, more or less, the data races are not 100% guaranteed to show up per run. You should be able to spot them on your own.
 
-I was very interested in the fact that, because threads do not have a copy constructor, a vector of threads needs to be populated by the move constructor and therefore by using `emplace_back`; also, when multiple threads are running, interleaved work can present a bug such as interrupted print statements in `cout`- `cout` is a shared resource that can be accessed in the middle of executing another method (??).
+I was very interested in the fact that, because threads do not have a copy constructor, a vector of threads needs to be populated by the move constructor and therefore by using `emplace_back`; also, when multiple threads are running, interleaved work can present a bug such as interrupted print statements in `cout`- `cout` is a shared resource that can be accessed in the middle of executing the same method by another thread (??).
 
 Notable code changes made in the project:
-- The basic structure of the project was already implemented- vehicles heading to destinations, communicating with an open intersection, and passing through one at a time worked. What was implemented was the ability for a traffic light to have a red light, and therefore pause the flow of cars. In addition to FIFO of cars being let through, the lights cycle between red and green. 
-- Flesh out a generic message queue with implementation split across `TrafficLight.h` and `TrafficLight.cpp`. Add some connecting code in `Intersection`, with a notable lines being `L87` to `L91`.
+- The basic structure of the project was already implemented- vehicles heading to destinations, communicating with an open intersection, and passing through one at a time. What was implemented was the ability for a traffic light to have a red light, and therefore pause the flow of cars. In addition to FIFO of cars being let through, the lights cycle between red and green. Every `Intersection` owns a `TrafficLight` that owns a thread that runs an infinite loop sending color messages to a message queue also owned by and wrapped by `TrafficLight`.
+- Fleshed out a generic message queue with implementation split across `TrafficLight.h` and `TrafficLight.cpp`. Added some connecting code in `Intersection`, with a notable lines being `L87` to `L91`. Every method in `TrafficLight.cpp` is newly implemented.
 - This wasn't in the project spec at all, but I wanted to pass in a parameter to the driver that would allow CLI toggling
-between the two cities Paris and NYC. The data and functions are already pre-written within the driver, all that has to be changed
-are which method is called in the `main` function. This is still unimplemented.
+between the two cities Paris and NYC. The data and functions were already pre-written within the driver, so all it needed was a user argument.
+I changed the `int main()` function in `TrafficSimulator-Final.cpp` to `int main(int argc, char** argv)` and used the string 
+to toggle, with the default/for malformed input being Paris. Had to change a C-style string to an `std::string`.
 
 <img src="data/traffic_simulation.gif"/>
 
@@ -37,8 +38,13 @@ are which method is called in the `main` function. This is still unimplemented.
 Two Options - 
 1. Only download the executable `traffic_simulation` from the `build` folder, and run it 
 through the `./traffic_simulation` command in the same directory.
+
+
 Or-
 1. Clone repo to local.
 2. Make a build directory in the top level directory: `mkdir build && cd build`
 3. Compile: `cmake .. && make`
 4. Run it through the following command: `./traffic_simulation`.
+
+To run with Paris as the background, either `./traffic_simulation` or `./traffic_simulation paris`.
+To run with NYC as the background, `./traffic_simulation nyc`.
