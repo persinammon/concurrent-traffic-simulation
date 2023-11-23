@@ -1,10 +1,20 @@
-# CPPND: Program a Concurrent Traffic Simulation
+# Concurrent Traffic Simulation
+
+This project practices C++ concurrency.
+
+I found this [resource](https://medium.com/codex/c-multithreading-the-simple-way-95aa1f7304a2) I really liked which introduced multithreading and concurrency, especially because this line -
+>Multithreading often carries a reputation for being difficult. Compared with other concepts in software development, one could certainly make a case for that. However, multithreading isn’t really that different from general programming. It’s just potentially more dangerous . Learning to protect against the danger, though, can allow one to implement far more powerful algorithms and programs than you could in a single threaded manner."
+
+Or, more or less, the data races are not 100% guaranteed to show up per run. You should be able to spot them on your own.
+
+I was very interested in the fact that, because threads do not have a copy constructor, a vector of threads needs to be populated by the move constructor and therefore by using `emplace_back`; also, when multiple threads are running, interleaved work can present a bug such as interrupted print statements in `cout`.
+
+This project is a traffic simulation in which vehicles are moving along streets and are crossing intersections. With increasing traffic in the city, traffic lights are needed for road safety. Each intersection has one traffic light. There needs to be a thread-safe communication protocol between vehicles and intersection (traffic lights) to complete the simulation, allowing for car objects to travel to their end address autonomously, while coordinating within themselves. 
+
+Notable code changes made in the project:
+- Everything was implemented, and the basic structure of vehicles heading to destinations, communicating with a traffic light, and passing through one at a time worked. The changes were 
 
 <img src="data/traffic_simulation.gif"/>
-
-This is the project for the fourth course in the [Udacity C++ Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213): Concurrency. 
-
-Throughout the Concurrency course, you have been developing a traffic simulation in which vehicles are moving along streets and are crossing intersections. However, with increasing traffic in the city, traffic lights are needed for road safety. Each intersection will therefore be equipped with a traffic light. In this project, you will build a suitable and thread-safe communication protocol between vehicles and intersections to complete the simulation. Use your knowledge of concurrent programming (such as mutexes, locks and message queues) to implement the traffic lights and integrate them properly in the code base.
 
 ## Dependencies for Running Locally
 * cmake >= 2.8
@@ -22,10 +32,10 @@ Throughout the Concurrency course, you have been developing a traffic simulation
 
 ## Basic Build Instructions
 
-1. Clone this repo.
+1. Clone repo to local.
 2. Make a build directory in the top level directory: `mkdir build && cd build`
 3. Compile: `cmake .. && make`
-4. Run it: `./traffic_simulation`.
+4. Run it through the following command: `./traffic_simulation`.
 
 ## Project Tasks
 
