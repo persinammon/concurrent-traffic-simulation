@@ -4,7 +4,7 @@
 
 /* Implementation of class "MessageQueue" */
 
-/* 
+
 template <typename T>
 T MessageQueue<T>::receive()
 {
@@ -16,10 +16,14 @@ T MessageQueue<T>::receive()
 template <typename T>
 void MessageQueue<T>::send(T &&msg)
 {
-    // FP.4a : The method send should use the mechanisms std::lock_guard<std::mutex> 
-    // as well as _condition.notify_one() to add a new message to the queue and afterwards send a notification.
+    // the message will be added to the light's queue (implemented as a generic message queue),
+    // but because the data structure can have reads and writes from multiple threads
+    // the critical section must be protected 
+    std::lock_guard<std::mutex> lck(_mutex); // this will unlock when guard out of scope
+    _queue.emplace_back(msg);
+    _cond.notify_one();
 }
-*/
+
 
 /* Implementation of class "TrafficLight" */
 
@@ -56,13 +60,11 @@ void TrafficLight::cycleThroughPhases()
     // cycle duration is a random integer between 4 and 6 seconds
     srand(time(NULL));
     std::chrono::duration cycleDuration = std::chrono::seconds((std::rand() % 3) + 4);
-    //std::cout << " cycle duration" << cycleDuration.count() << std::endl;
     while (true) {
         std::this_thread::sleep_for(cycleDuration);
         _currentPhase = (_currentPhase == TrafficLightPhase::red) ? TrafficLightPhase::green : TrafficLightPhase::red;
-        // update method to the message queue using move semantics
-        // owning a message queue, send it a new instance of TrafficLightPhase enum
-
+        // update method to the message queue using move semantics, r-value
+        _messagequeue.send(&&_currentPhase);
         // without a small thread wait function, the processor burns fast and hard through an infinite while loop
         // this sleep_for instruction reduces processor load
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
